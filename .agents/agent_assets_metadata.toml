@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "oLkszU8_bK2A-4W2wOsWY"
+uri = "file://artifacts/colour-explorer/public/palettrast-logo.svg"
+type = "image"
+title = "Palettrast Logo (SVG)"

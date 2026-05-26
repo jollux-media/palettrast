@@ -1,0 +1,152 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: schemes
+    description: Saved colour scheme operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /schemes:
+    get:
+      operationId: getSchemes
+      tags: [schemes]
+      summary: List saved colour schemes for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of saved schemes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scheme"
+        "401":
+          description: Unauthorized
+    post:
+      operationId: createScheme
+      tags: [schemes]
+      summary: Save a new colour scheme
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSchemeBody"
+      responses:
+        "201":
+          description: Created scheme
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scheme"
+        "401":
+          description: Unauthorized
+  /schemes/{id}:
+    delete:
+      operationId: deleteScheme
+      tags: [schemes]
+      summary: Delete a saved colour scheme
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted successfully
+        "401":
+          description: Unauthorized
+        "404":
+          description: Scheme not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ColourMapData:
+      type: object
+      additionalProperties:
+        type: string
+    PerModeMaps:
+      type: object
+      properties:
+        dark:
+          $ref: "#/components/schemas/ColourMapData"
+        light:
+          $ref: "#/components/schemas/ColourMapData"
+      required:
+        - dark
+        - light
+    Scheme:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        colours:
+          type: array
+          items:
+            type: string
+        maps:
+          $ref: "#/components/schemas/PerModeMaps"
+        savedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - colours
+        - maps
+        - savedAt
+    CreateSchemeBody:
+      type: object
+      properties:
+        name:
+          type: string
+        colours:
+          type: array
+          items:
+            type: string
+        maps:
+          $ref: "#/components/schemas/PerModeMaps"
+      required:
+        - name
+        - colours
+        - maps
