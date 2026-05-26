@@ -1,9 +1,17 @@
 # Railway uses Nixpacks to build this monorepo.
+# Must activate pnpm 11 via Corepack before install — the default Nixpacks pnpm 9
+# rejects our lockfile's overrides format (ERR_PNPM_LOCKFILE_CONFIG_MISMATCH).
 [variables]
 NODE_VERSION = "24"
 
 [phases.install]
-cmds = ["pnpm install --frozen-lockfile"]
+cmds = [
+  "npm install -g corepack@0.24.1",
+  "corepack enable",
+  "corepack prepare pnpm@11.3.0 --activate",
+  "pnpm --version",
+  "pnpm install --frozen-lockfile",
+]
 
 [phases.build]
 cmds = ["pnpm run railway:build"]
