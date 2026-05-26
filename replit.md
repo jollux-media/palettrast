@@ -25,3 +25,12 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+
+## Local Development (non-Replit)
+
+1. Copy `.env.local.example` to `.env.local`.
+2. Fill in `DATABASE_URL`, `CLERK_SECRET_KEY`, and `VITE_CLERK_PUBLISHABLE_KEY`.
+3. Install dependencies: `pnpm install`
+4. Run API: `pnpm --filter @workspace/api-server run dev`
+5. Run frontend: `pnpm --filter @workspace/colour-explorer run dev`
+6. Push DB schema: `pnpm --filter @workspace/db run push`
