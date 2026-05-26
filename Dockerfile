@@ -13,8 +13,9 @@ COPY scripts ./scripts
 ARG VITE_CLERK_PUBLISHABLE_KEY
 ENV VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
 
-# minimumReleaseAge in pnpm-workspace.yaml can block fresh catalog versions in CI
-RUN pnpm install --frozen-lockfile --config.minimumReleaseAge=0
+# --ignore-scripts: root preinstall checks npm_config_user_agent (unset in Docker)
+RUN pnpm install --frozen-lockfile --config.minimumReleaseAge=0 --ignore-scripts
+RUN pnpm rebuild
 
 RUN pnpm run railway:build
 
