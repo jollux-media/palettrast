@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { cp, rm } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
@@ -12,9 +13,22 @@ function run(command, cwd) {
   execSync(command, { cwd, stdio: "inherit", env: process.env });
 }
 
-// Call vite/esbuild directly so Docker builds don't re-run `pnpm install` (root preinstall).
-const requireColour = createRequire(path.join(colourDir, "package.json"));
-const viteBin = requireColour.resolve("vite/bin/vite.js");
+function resolvePackageBin(packageName, cwd) {
+  const req = createRequire(path.join(cwd, "package.json"));
+  const pkgJsonPath = req.resolve(`${packageName}/package.json`);
+  const pkg = JSON.parse(readFileSync(pkgJsonPath, "utf8"));
+  const binField = pkg.bin;
+  const binRel =
+    typeof binField === "string"
+      ? binField
+      : (binField?.[packageName] ?? Object.values(binField ?? {})[0]);
+  if (!binRel) {
+    throw new Error(`No bin entry found for ${packageName}`);
+  }
+  return path.join(path.dirname(pkgJsonPath), binRel);
+}
+
+const viteBin = resolvePackageBin("vite", colourDir);
 
 run(`node "${viteBin}" build --config vite.config.ts`, colourDir);
 run("node ./build.mjs", apiDir);

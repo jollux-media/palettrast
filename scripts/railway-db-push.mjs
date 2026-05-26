@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
 import path from "node:path";
@@ -11,8 +12,22 @@ if (!process.env.DATABASE_URL) {
   process.exit(0);
 }
 
-const requireDb = createRequire(path.join(dbDir, "package.json"));
-const drizzleBin = requireDb.resolve("drizzle-kit/bin.cjs");
+function resolvePackageBin(packageName, cwd) {
+  const req = createRequire(path.join(cwd, "package.json"));
+  const pkgJsonPath = req.resolve(`${packageName}/package.json`);
+  const pkg = JSON.parse(readFileSync(pkgJsonPath, "utf8"));
+  const binField = pkg.bin;
+  const binRel =
+    typeof binField === "string"
+      ? binField
+      : (binField?.[packageName] ?? Object.values(binField ?? {})[0]);
+  if (!binRel) {
+    throw new Error(`No bin entry found for ${packageName}`);
+  }
+  return path.join(path.dirname(pkgJsonPath), binRel);
+}
+
+const drizzleBin = resolvePackageBin("drizzle-kit", dbDir);
 
 execSync(`node "${drizzleBin}" push --config ./drizzle.config.ts`, {
   cwd: dbDir,
