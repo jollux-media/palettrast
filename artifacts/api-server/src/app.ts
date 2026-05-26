@@ -4,11 +4,17 @@ import { fileURLToPath } from "node:url";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import { clerkMiddleware } from "@clerk/express";
+import { HealthCheckResponse } from "@workspace/api-zod";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from "./middlewares/clerkProxyMiddleware";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
+
+// Railway / load balancers — no Clerk or DB required
+app.get("/api/healthz", (_req, res) => {
+  res.json(HealthCheckResponse.parse({ status: "ok" }));
+});
 
 // Clerk FAPI proxy — must come before express.json()
 // Only active in production; no-op in development

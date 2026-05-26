@@ -17,6 +17,7 @@ ENV VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
 RUN pnpm install --frozen-lockfile --config.minimumReleaseAge=0 --ignore-scripts
 RUN pnpm rebuild
 
+ENV NODE_ENV=production
 RUN node ./scripts/railway-build.mjs
 
 FROM node:24-bookworm-slim AS runner
