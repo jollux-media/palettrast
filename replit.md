@@ -37,7 +37,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 
 ## Railway deployment
 
-One Railway **web service** builds and runs the API plus the Palettrast UI on the same URL (so `/api` and sign-in work like Replit).
+Builds use the root **Dockerfile** (not Nixpacks). One Railway **web service** runs the API plus the Palettrast UI on the same URL (so `/api` and sign-in work like Replit).
 
 1. In the Railway project, add **PostgreSQL** and link `DATABASE_URL` to the web service.
 2. Set these variables on the web service:

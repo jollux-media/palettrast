@@ -1,10 +1,10 @@
 [build]
-builder = "nixpacks"
-buildCommand = "pnpm run railway:build"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "pnpm run railway:start"
-releaseCommand = "pnpm run railway:db-push"
+startCommand = "node --enable-source-maps artifacts/api-server/dist/index.mjs"
+releaseCommand = "node scripts/railway-db-push.mjs"
 healthcheckPath = "/api/healthz"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
