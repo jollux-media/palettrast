@@ -9,7 +9,8 @@
   },
   "scripts": {
     "push": "node --env-file=../../.env.local ./node_modules/drizzle-kit/bin.cjs push --config ./drizzle.config.ts",
-    "push-force": "node --env-file=../../.env.local ./node_modules/drizzle-kit/bin.cjs push --force --config ./drizzle.config.ts"
+    "push-force": "node --env-file=../../.env.local ./node_modules/drizzle-kit/bin.cjs push --force --config ./drizzle.config.ts",
+    "push:ci": "node ./node_modules/drizzle-kit/bin.cjs push --config ./drizzle.config.ts"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",

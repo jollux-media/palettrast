@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+buildCommand = "pnpm run railway:build"
+
+[deploy]
+startCommand = "pnpm run railway:start"
+releaseCommand = "pnpm run railway:db-push"
+healthcheckPath = "/api/healthz"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"

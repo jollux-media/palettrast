@@ -34,3 +34,17 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 4. Run API: `pnpm --filter @workspace/api-server run dev`
 5. Run frontend: `pnpm --filter @workspace/colour-explorer run dev`
 6. Push DB schema: `pnpm --filter @workspace/db run push`
+
+## Railway deployment
+
+One Railway **web service** builds and runs the API plus the Palettrast UI on the same URL (so `/api` and sign-in work like Replit).
+
+1. In the Railway project, add **PostgreSQL** and link `DATABASE_URL` to the web service.
+2. Set these variables on the web service:
+   - `DATABASE_URL` (from Postgres; use “Reference” if available)
+   - `CLERK_SECRET_KEY`
+   - `CLERK_PUBLISHABLE_KEY`
+   - `VITE_CLERK_PUBLISHABLE_KEY` (same value as publishable key; required at build time)
+   - `NODE_ENV=production`
+3. Deploy from the `main` branch. Each deploy runs `railway:db-push` to apply the schema.
+4. In the Clerk dashboard, add your Railway URL under allowed origins / redirect URLs.

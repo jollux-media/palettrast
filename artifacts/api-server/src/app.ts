@@ -1,4 +1,6 @@
 import express, { type Express } from "express";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import { clerkMiddleware } from "@clerk/express";
@@ -40,5 +42,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use(clerkMiddleware());
 
 app.use("/api", router);
+
+if (process.env.NODE_ENV === "production") {
+  const frontendDist =
+    process.env.FRONTEND_DIST ??
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "public");
+
+  app.use(express.static(frontendDist));
+
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      next();
+      return;
+    }
+
+    res.sendFile(path.join(frontendDist, "index.html"), (err) => {
+      if (err) next(err);
+    });
+  });
+}
 
 export default app;
