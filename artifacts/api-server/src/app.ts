@@ -56,7 +56,12 @@ if (process.env.NODE_ENV === "production") {
 
   app.use(express.static(frontendDist));
 
-  app.get("*", (req, res, next) => {
+  // Express 5: bare "*" routes break path-to-regexp — use middleware for SPA fallback
+  app.use((req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      next();
+      return;
+    }
     if (req.path.startsWith("/api")) {
       next();
       return;
