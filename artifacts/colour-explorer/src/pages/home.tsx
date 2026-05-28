@@ -5,7 +5,7 @@ import { SavedSchemes } from "@/components/SavedSchemes";
 import { ContrastChecker } from "@/components/ContrastChecker";
 import { SaasMockup } from "@/components/SaasMockup";
 import { LogoPalettrast } from "@/components/LogoPalettrast";
-import { SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
+import { UserButton, useClerk } from "@clerk/clerk-react";
 import { useColours } from "@/lib/colour-context";
 import { useAppAuth } from "@/lib/auth-context";
 import { Shuffle, Sun, Moon, Sliders, ShieldCheck } from "lucide-react";
@@ -19,6 +19,7 @@ const NEU_INSET = "inset 4px 4px 8px rgba(0,0,0,0.10), inset -4px -4px 8px rgba(
 export default function Home() {
   const { shuffle, mode, toggleMode } = useColours();
   const { hasAuthConfigured, isSignedIn, isLoaded } = useAppAuth();
+  const clerk = useClerk();
   const [leftTab, setLeftTab] = useState<LeftTab>("palette");
 
   return (
@@ -43,27 +44,31 @@ export default function Home() {
             )}
             {hasAuthConfigured && !isSignedIn && (
               <>
-                <SignInButton mode="modal">
-                  <button
-                    className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
-                    style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
-                    disabled={!isLoaded}
-                  >
-                    Log In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button
-                    className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90 disabled:opacity-60"
-                    style={{
-                      background: "linear-gradient(135deg, #6366F1, #818CF8)",
-                      boxShadow: "4px 4px 10px rgba(99,102,241,0.35), -2px -2px 6px rgba(255,255,255,0.6)",
-                    }}
-                    disabled={!isLoaded}
-                  >
-                    Sign Up
-                  </button>
-                </SignUpButton>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
+                  style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
+                  onClick={() => {
+                    if (isLoaded) clerk.openSignIn();
+                    else window.location.assign("/sign-in");
+                  }}
+                >
+                  Log In
+                </button>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90"
+                  style={{
+                    background: "linear-gradient(135deg, #6366F1, #818CF8)",
+                    boxShadow: "4px 4px 10px rgba(99,102,241,0.35), -2px -2px 6px rgba(255,255,255,0.6)",
+                  }}
+                  onClick={() => {
+                    if (isLoaded) clerk.openSignUp();
+                    else window.location.assign("/sign-up");
+                  }}
+                >
+                  Sign Up
+                </button>
               </>
             )}
 
