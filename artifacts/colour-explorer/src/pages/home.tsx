@@ -20,7 +20,6 @@ export default function Home() {
   const { shuffle, mode, toggleMode } = useColours();
   const { hasAuthConfigured, isSignedIn, isLoaded } = useAppAuth();
   const [leftTab, setLeftTab] = useState<LeftTab>("palette");
-  const authFallbackBase = "/api/__clerk";
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: NEU_BG }}>
@@ -44,49 +43,27 @@ export default function Home() {
             )}
             {hasAuthConfigured && !isSignedIn && (
               <>
-                {isLoaded ? (
-                  <>
-                    <SignInButton mode="modal">
-                      <button
-                        className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
-                        style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
-                      >
-                        Log In
-                      </button>
-                    </SignInButton>
-                    <SignUpButton mode="modal">
-                      <button
-                        className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90"
-                        style={{
-                          background: "linear-gradient(135deg, #6366F1, #818CF8)",
-                          boxShadow: "4px 4px 10px rgba(99,102,241,0.35), -2px -2px 6px rgba(255,255,255,0.6)",
-                        }}
-                      >
-                        Sign Up
-                      </button>
-                    </SignUpButton>
-                  </>
-                ) : (
-                  <>
-                    <a
-                      href={`${authFallbackBase}/sign-in`}
-                      className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
-                      style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
-                    >
-                      Log In
-                    </a>
-                    <a
-                      href={`${authFallbackBase}/sign-up`}
-                      className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90"
-                      style={{
-                        background: "linear-gradient(135deg, #6366F1, #818CF8)",
-                        boxShadow: "4px 4px 10px rgba(99,102,241,0.35), -2px -2px 6px rgba(255,255,255,0.6)",
-                      }}
-                    >
-                      Sign Up
-                    </a>
-                  </>
-                )}
+                <SignInButton mode="modal">
+                  <button
+                    className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
+                    style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
+                    disabled={!isLoaded}
+                  >
+                    Log In
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button
+                    className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90 disabled:opacity-60"
+                    style={{
+                      background: "linear-gradient(135deg, #6366F1, #818CF8)",
+                      boxShadow: "4px 4px 10px rgba(99,102,241,0.35), -2px -2px 6px rgba(255,255,255,0.6)",
+                    }}
+                    disabled={!isLoaded}
+                  >
+                    Sign Up
+                  </button>
+                </SignUpButton>
               </>
             )}
 
