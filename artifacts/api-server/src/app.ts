@@ -25,6 +25,8 @@ app.get("/api/runtime-config", (_req, res) => {
   res.setHeader("Cache-Control", "no-store");
   res.json({
     clerkPublishableKey: clerkPublishableKey ?? null,
+    clerkSignInUrl: process.env.CLERK_SIGN_IN_URL ?? null,
+    clerkSignUpUrl: process.env.CLERK_SIGN_UP_URL ?? null,
   });
 });
 

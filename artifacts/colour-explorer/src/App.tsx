@@ -12,10 +12,12 @@ import NotFound from "@/pages/not-found";
 import { Toaster } from "sonner";
 import { useEffect, useMemo, useState } from "react";
 import { getClerkPublishableKey } from "@/lib/clerk-env";
+import { fetchRuntimeConfig } from "@/lib/runtime-config";
 
 const queryClient = new QueryClient();
 
 const BUILD_TIME_PUBLISHABLE_KEY = getClerkPublishableKey();
+const IS_PROD = import.meta.env.PROD;
 const clerkAppearance = {
   variables: {
     colorPrimary: "#6366F1",
@@ -122,26 +124,37 @@ const defaultAuth: AuthValue = {
 
 function App() {
   const [runtimePublishableKey, setRuntimePublishableKey] = useState<string | undefined>(
-    BUILD_TIME_PUBLISHABLE_KEY,
+    IS_PROD ? undefined : BUILD_TIME_PUBLISHABLE_KEY,
   );
-  const [isConfigResolved, setIsConfigResolved] = useState(Boolean(BUILD_TIME_PUBLISHABLE_KEY));
+  const [isConfigResolved, setIsConfigResolved] = useState(!IS_PROD && Boolean(BUILD_TIME_PUBLISHABLE_KEY));
 
   useEffect(() => {
-    if (BUILD_TIME_PUBLISHABLE_KEY) return;
-
     let cancelled = false;
 
-    void fetch("/api/runtime-config", { cache: "no-store" })
-      .then(async (res) => {
-        if (!res.ok) return;
-        const data = (await res.json()) as { clerkPublishableKey?: string | null };
-        const key = data.clerkPublishableKey?.trim();
-        if (!cancelled && key) {
+    if (!IS_PROD) {
+      if (BUILD_TIME_PUBLISHABLE_KEY) {
+        setRuntimePublishableKey(BUILD_TIME_PUBLISHABLE_KEY);
+      }
+      setIsConfigResolved(true);
+      return;
+    }
+
+    void fetchRuntimeConfig()
+      .then((config) => {
+        if (cancelled) return;
+        const key = config.clerkPublishableKey?.trim();
+        if (key) {
           setRuntimePublishableKey(key);
+          return;
+        }
+        if (BUILD_TIME_PUBLISHABLE_KEY) {
+          setRuntimePublishableKey(BUILD_TIME_PUBLISHABLE_KEY);
         }
       })
       .catch(() => {
-        // Keep auth disabled when runtime config endpoint is unavailable.
+        if (!cancelled && BUILD_TIME_PUBLISHABLE_KEY) {
+          setRuntimePublishableKey(BUILD_TIME_PUBLISHABLE_KEY);
+        }
       })
       .finally(() => {
         if (!cancelled) setIsConfigResolved(true);
@@ -166,7 +179,14 @@ function App() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey} appearance={clerkAppearance}>
+    <ClerkProvider
+      publishableKey={publishableKey}
+      appearance={clerkAppearance}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/"
+      afterSignUpUrl="/"
+    >
       <AppWithClerk />
     </ClerkProvider>
   );
