@@ -7,8 +7,8 @@ import { SaasMockup } from "@/components/SaasMockup";
 import { LogoPalettrast } from "@/components/LogoPalettrast";
 import { SignInButton, SignUpButton, UserButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { useColours } from "@/lib/colour-context";
+import { useAppAuth } from "@/lib/auth-context";
 import { Shuffle, Sun, Moon, Sliders, ShieldCheck } from "lucide-react";
-import { hasClerkPublishableKey } from "@/lib/clerk-env";
 
 type LeftTab = "palette" | "contrast";
 
@@ -18,9 +18,8 @@ const NEU_INSET = "inset 4px 4px 8px rgba(0,0,0,0.10), inset -4px -4px 8px rgba(
 
 export default function Home() {
   const { shuffle, mode, toggleMode } = useColours();
+  const { hasAuthConfigured } = useAppAuth();
   const [leftTab, setLeftTab] = useState<LeftTab>("palette");
-
-  const hasClerk = hasClerkPublishableKey();
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: NEU_BG }}>
@@ -39,7 +38,7 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             {/* Auth buttons — only rendered when ClerkProvider is active */}
-            {hasClerk && (
+            {hasAuthConfigured && (
               <>
                 <SignedOut>
                   <SignInButton mode="modal">
@@ -99,7 +98,7 @@ export default function Home() {
       </header>
 
       <div className="max-w-screen-2xl mx-auto px-6 py-6">
-        {!hasClerk && (
+        {!hasAuthConfigured && (
           <div
             className="mb-5 rounded-xl border px-4 py-3 text-sm"
             style={{ backgroundColor: "#FEF3C7", borderColor: "#F59E0B", color: "#92400E" }}

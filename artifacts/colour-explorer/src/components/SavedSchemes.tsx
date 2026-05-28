@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useColours } from "@/lib/colour-context";
+import { useAppAuth } from "@/lib/auth-context";
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 import { Trash2, Download, Clock, ChevronDown, LogIn, UserPlus } from "lucide-react";
-import { hasClerkPublishableKey } from "@/lib/clerk-env";
 
 const NEU_BG = "#E8ECF1";
 const NEU_SHADOW = "6px 6px 14px rgba(0,0,0,0.10), -6px -6px 14px rgba(255,255,255,0.85)";
@@ -19,11 +19,10 @@ function timeAgo(ts: number): string {
 
 export function SavedSchemes() {
   const { savedSchemes, loadScheme, deleteScheme, isSignedIn, openSchemesSignal } = useColours();
+  const { hasAuthConfigured } = useAppAuth();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
-
-  const hasClerk = hasClerkPublishableKey();
 
   // Open the panel and scroll it into view when triggered by ColourInput's save button (signed-out flow)
   useEffect(() => {
@@ -69,7 +68,7 @@ export function SavedSchemes() {
       {open && (
         <div className="px-5 pb-4 border-t border-black/5">
           {/* Not signed in — CTA */}
-          {hasClerk && !isSignedIn ? (
+          {hasAuthConfigured && !isSignedIn ? (
             <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-5 text-center space-y-3">
               <p className="text-sm font-semibold text-indigo-800">Save &amp; sync your colour schemes</p>
               <p className="text-xs text-indigo-600 leading-relaxed">

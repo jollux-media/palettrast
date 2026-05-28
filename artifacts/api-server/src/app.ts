@@ -10,10 +10,22 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
+const clerkPublishableKey =
+  process.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  process.env.CLERK_PUBLISHABLE_KEY;
 
 // Railway / load balancers — no Clerk or DB required
 app.get("/api/healthz", (_req, res) => {
   res.json(HealthCheckResponse.parse({ status: "ok" }));
+});
+
+// Runtime config for browser code when build-time env injection is unavailable.
+app.get("/api/runtime-config", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.json({
+    clerkPublishableKey: clerkPublishableKey ?? null,
+  });
 });
 
 // Clerk FAPI proxy — must come before express.json()

@@ -8,12 +8,12 @@ import { setAuthTokenGetter } from "@workspace/api-client-react";
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getClerkPublishableKey } from "@/lib/clerk-env";
 
 const queryClient = new QueryClient();
 
-const PUBLISHABLE_KEY = getClerkPublishableKey();
+const BUILD_TIME_PUBLISHABLE_KEY = getClerkPublishableKey();
 
 function Router() {
   return (
@@ -40,11 +40,17 @@ function AuthSync({ getToken }: { getToken: AuthValue["getToken"] }) {
   return null;
 }
 
-function AppContent({ authValue }: { authValue: AuthValue }) {
+function AppContent({
+  authValue,
+  hasAuthConfigured,
+}: {
+  authValue: AuthValue;
+  hasAuthConfigured: boolean;
+}) {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={authValue}>
-        {PUBLISHABLE_KEY && <AuthSync getToken={authValue.getToken} />}
+      <AuthContext.Provider value={{ ...authValue, hasAuthConfigured }}>
+        {hasAuthConfigured && <AuthSync getToken={authValue.getToken} />}
         <TooltipProvider>
           <ColourProvider>
             <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
@@ -61,6 +67,7 @@ function AppContent({ authValue }: { authValue: AuthValue }) {
 function AppWithClerk() {
   const { isSignedIn = false, isLoaded = false, getToken } = useAuth();
   const authValue: AuthValue = {
+    hasAuthConfigured: true,
     isSignedIn: Boolean(isSignedIn && isLoaded),
     isLoaded,
     getToken: getToken ?? (() => Promise.resolve(null)),
@@ -70,18 +77,59 @@ function AppWithClerk() {
     ? `${window.location.origin}/api/__clerk`
     : undefined;
 
-  return <AppContent authValue={authValue} />;
+  return <AppContent authValue={authValue} hasAuthConfigured={true} />;
 }
 
 const defaultAuth: AuthValue = {
+  hasAuthConfigured: false,
   isSignedIn: false,
   isLoaded: true,
   getToken: async () => null,
 };
 
 function App() {
-  if (!PUBLISHABLE_KEY) {
-    return <AppContent authValue={defaultAuth} />;
+  const [runtimePublishableKey, setRuntimePublishableKey] = useState<string | undefined>(
+    BUILD_TIME_PUBLISHABLE_KEY,
+  );
+  const [isConfigResolved, setIsConfigResolved] = useState(Boolean(BUILD_TIME_PUBLISHABLE_KEY));
+
+  useEffect(() => {
+    if (BUILD_TIME_PUBLISHABLE_KEY) return;
+
+    let cancelled = false;
+
+    void fetch("/api/runtime-config", { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok) return;
+        const data = (await res.json()) as { clerkPublishableKey?: string | null };
+        const key = data.clerkPublishableKey?.trim();
+        if (!cancelled && key) {
+          setRuntimePublishableKey(key);
+        }
+      })
+      .catch(() => {
+        // Keep auth disabled when runtime config endpoint is unavailable.
+      })
+      .finally(() => {
+        if (!cancelled) setIsConfigResolved(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const publishableKey = useMemo(
+    () => runtimePublishableKey?.trim() || undefined,
+    [runtimePublishableKey],
+  );
+
+  if (!isConfigResolved) {
+    return <AppContent authValue={defaultAuth} hasAuthConfigured={false} />;
+  }
+
+  if (!publishableKey) {
+    return <AppContent authValue={defaultAuth} hasAuthConfigured={false} />;
   }
 
   const proxyUrl = import.meta.env.PROD
@@ -89,7 +137,7 @@ function App() {
     : undefined;
 
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} {...(proxyUrl ? { proxyUrl } : {})}>
+    <ClerkProvider publishableKey={publishableKey} {...(proxyUrl ? { proxyUrl } : {})}>
       <AppWithClerk />
     </ClerkProvider>
   );
