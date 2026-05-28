@@ -11,7 +11,11 @@ COPY lib ./lib
 COPY scripts ./scripts
 
 ARG VITE_CLERK_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG CLERK_PUBLISHABLE_KEY
 ENV VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+ENV CLERK_PUBLISHABLE_KEY=${CLERK_PUBLISHABLE_KEY}
 
 # --ignore-scripts: root preinstall checks npm_config_user_agent (unset in Docker)
 RUN pnpm install --frozen-lockfile --config.minimumReleaseAge=0 --ignore-scripts

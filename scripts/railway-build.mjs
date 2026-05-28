@@ -9,6 +9,16 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const colourDir = path.join(root, "artifacts/colour-explorer");
 const apiDir = path.join(root, "artifacts/api-server");
 
+const resolvedClerkPublishableKey =
+  process.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  process.env.CLERK_PUBLISHABLE_KEY;
+if (resolvedClerkPublishableKey) {
+  process.env.VITE_CLERK_PUBLISHABLE_KEY = resolvedClerkPublishableKey;
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = resolvedClerkPublishableKey;
+  process.env.CLERK_PUBLISHABLE_KEY = resolvedClerkPublishableKey;
+}
+
 function run(command, cwd) {
   execSync(command, { cwd, stdio: "inherit", env: process.env });
 }
