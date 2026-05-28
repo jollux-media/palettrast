@@ -8,6 +8,7 @@ import { LogoPalettrast } from "@/components/LogoPalettrast";
 import { SignInButton, SignUpButton, UserButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { useColours } from "@/lib/colour-context";
 import { Shuffle, Sun, Moon, Sliders, ShieldCheck } from "lucide-react";
+import { hasClerkPublishableKey } from "@/lib/clerk-env";
 
 type LeftTab = "palette" | "contrast";
 
@@ -19,12 +20,7 @@ export default function Home() {
   const { shuffle, mode, toggleMode } = useColours();
   const [leftTab, setLeftTab] = useState<LeftTab>("palette");
 
-  const clerkPublishableKey =
-    (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) ??
-    ((import.meta.env as Record<string, string | undefined>).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as
-      | string
-      | undefined);
-  const hasClerk = Boolean(clerkPublishableKey);
+  const hasClerk = hasClerkPublishableKey();
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: NEU_BG }}>
@@ -110,7 +106,8 @@ export default function Home() {
           >
             Sign-up is temporarily unavailable because authentication is not configured. Add
             <code className="mx-1">VITE_CLERK_PUBLISHABLE_KEY</code>
-            in your deployment environment to enable Log In and Sign Up.
+            (or <code className="mx-1">CLERK_PUBLISHABLE_KEY</code>) in your deployment environment
+            to enable Log In and Sign Up.
           </div>
         )}
         <div className="grid gap-6" style={{ gridTemplateColumns: "370px 1fr" }}>

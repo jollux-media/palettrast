@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useColours } from "@/lib/colour-context";
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 import { Trash2, Download, Clock, ChevronDown, LogIn, UserPlus } from "lucide-react";
+import { hasClerkPublishableKey } from "@/lib/clerk-env";
 
 const NEU_BG = "#E8ECF1";
 const NEU_SHADOW = "6px 6px 14px rgba(0,0,0,0.10), -6px -6px 14px rgba(255,255,255,0.85)";
@@ -22,12 +23,7 @@ export function SavedSchemes() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
 
-  const clerkPublishableKey =
-    (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) ??
-    ((import.meta.env as Record<string, string | undefined>).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as
-      | string
-      | undefined);
-  const hasClerk = Boolean(clerkPublishableKey);
+  const hasClerk = hasClerkPublishableKey();
 
   // Open the panel and scroll it into view when triggered by ColourInput's save button (signed-out flow)
   useEffect(() => {
