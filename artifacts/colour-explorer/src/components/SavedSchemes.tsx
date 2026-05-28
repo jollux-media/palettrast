@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useColours } from "@/lib/colour-context";
 import { useAppAuth } from "@/lib/auth-context";
-import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 import { Trash2, Download, Clock, ChevronDown, LogIn, UserPlus } from "lucide-react";
 
 const NEU_BG = "#E8ECF1";
@@ -19,7 +18,7 @@ function timeAgo(ts: number): string {
 
 export function SavedSchemes() {
   const { savedSchemes, loadScheme, deleteScheme, isSignedIn, openSchemesSignal } = useColours();
-  const { hasAuthConfigured, isLoaded } = useAppAuth();
+  const { hasAuthConfigured } = useAppAuth();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
@@ -75,23 +74,19 @@ export function SavedSchemes() {
                 Create a free account to save your palettes and access them from any device.
               </p>
               <div className="flex gap-2 justify-center pt-1">
-                <SignUpButton mode="redirect" fallbackRedirectUrl="/" signInFallbackRedirectUrl="/sign-in">
-                  <button
-                    className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90 disabled:opacity-60"
-                    style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
-                    disabled={!isLoaded}
-                  >
-                    <UserPlus size={12} /> Sign Up Free
-                  </button>
-                </SignUpButton>
-                <SignInButton mode="redirect" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/sign-up">
-                  <button
-                    className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50 disabled:opacity-60"
-                    disabled={!isLoaded}
-                  >
-                    <LogIn size={12} /> Log In
-                  </button>
-                </SignInButton>
+                <a
+                  href="/sign-up"
+                  className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90"
+                  style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
+                >
+                  <UserPlus size={12} /> Sign Up Free
+                </a>
+                <a
+                  href="/sign-in"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50"
+                >
+                  <LogIn size={12} /> Log In
+                </a>
               </div>
             </div>
           ) : (
