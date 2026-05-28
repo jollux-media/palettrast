@@ -16,6 +16,39 @@ import { getClerkPublishableKey } from "@/lib/clerk-env";
 const queryClient = new QueryClient();
 
 const BUILD_TIME_PUBLISHABLE_KEY = getClerkPublishableKey();
+const clerkAppearance = {
+  variables: {
+    colorPrimary: "#6366F1",
+    colorBackground: "#E8ECF1",
+    colorInputBackground: "#F8FAFC",
+    colorInputText: "#0F172A",
+    colorText: "#0F172A",
+    colorTextSecondary: "#475569",
+    colorDanger: "#DC2626",
+    borderRadius: "0.9rem",
+    fontFamily: "Inter, system-ui, sans-serif",
+  },
+  elements: {
+    card: {
+      boxShadow: "6px 6px 14px rgba(0,0,0,0.10), -6px -6px 14px rgba(255,255,255,0.85)",
+      border: "1px solid #DCE3EA",
+    },
+    formButtonPrimary: {
+      background:
+        "linear-gradient(135deg, #6366F1, #818CF8)",
+      color: "#FFFFFF",
+    },
+    socialButtonsBlockButton: {
+      border: "1px solid #CBD5E1",
+      backgroundColor: "#FFFFFF",
+      color: "#334155",
+    },
+    footerActionLink: {
+      color: "#4F46E5",
+      fontWeight: 600,
+    },
+  },
+};
 
 function Router() {
   return (
@@ -133,7 +166,7 @@ function App() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey}>
+    <ClerkProvider publishableKey={publishableKey} appearance={clerkAppearance}>
       <AppWithClerk />
     </ClerkProvider>
   );
