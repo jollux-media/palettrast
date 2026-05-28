@@ -19,7 +19,12 @@ export default function Home() {
   const { shuffle, mode, toggleMode } = useColours();
   const [leftTab, setLeftTab] = useState<LeftTab>("palette");
 
-  const hasClerk = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+  const clerkPublishableKey =
+    (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) ??
+    ((import.meta.env as Record<string, string | undefined>).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as
+      | string
+      | undefined);
+  const hasClerk = Boolean(clerkPublishableKey);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: NEU_BG }}>
@@ -98,6 +103,16 @@ export default function Home() {
       </header>
 
       <div className="max-w-screen-2xl mx-auto px-6 py-6">
+        {!hasClerk && (
+          <div
+            className="mb-5 rounded-xl border px-4 py-3 text-sm"
+            style={{ backgroundColor: "#FEF3C7", borderColor: "#F59E0B", color: "#92400E" }}
+          >
+            Sign-up is temporarily unavailable because authentication is not configured. Add
+            <code className="mx-1">VITE_CLERK_PUBLISHABLE_KEY</code>
+            in your deployment environment to enable Log In and Sign Up.
+          </div>
+        )}
         <div className="grid gap-6" style={{ gridTemplateColumns: "370px 1fr" }}>
 
           {/* ── Left panel ── */}

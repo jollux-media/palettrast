@@ -22,7 +22,12 @@ export function SavedSchemes() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
 
-  const hasClerk = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+  const clerkPublishableKey =
+    (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) ??
+    ((import.meta.env as Record<string, string | undefined>).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as
+      | string
+      | undefined);
+  const hasClerk = Boolean(clerkPublishableKey);
 
   // Open the panel and scroll it into view when triggered by ColourInput's save button (signed-out flow)
   useEffect(() => {
