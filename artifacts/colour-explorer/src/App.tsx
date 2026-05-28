@@ -77,10 +77,6 @@ function AppWithClerk() {
     getToken: getToken ?? (() => Promise.resolve(null)),
   };
 
-  const proxyUrl = import.meta.env.PROD
-    ? `${window.location.origin}/api/__clerk`
-    : undefined;
-
   return <AppContent authValue={authValue} hasAuthConfigured={true} />;
 }
 
@@ -136,12 +132,8 @@ function App() {
     return <AppContent authValue={defaultAuth} hasAuthConfigured={false} />;
   }
 
-  const proxyUrl = import.meta.env.PROD
-    ? `${window.location.origin}/api/__clerk`
-    : undefined;
-
   return (
-    <ClerkProvider publishableKey={publishableKey} {...(proxyUrl ? { proxyUrl } : {})}>
+    <ClerkProvider publishableKey={publishableKey}>
       <AppWithClerk />
     </ClerkProvider>
   );
