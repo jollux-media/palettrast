@@ -19,10 +19,11 @@ function timeAgo(ts: number): string {
 
 export function SavedSchemes() {
   const { savedSchemes, loadScheme, deleteScheme, isSignedIn, openSchemesSignal } = useColours();
-  const { hasAuthConfigured } = useAppAuth();
+  const { hasAuthConfigured, isLoaded } = useAppAuth();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
+  const authFallbackBase = "/api/__clerk";
 
   // Open the panel and scroll it into view when triggered by ColourInput's save button (signed-out flow)
   useEffect(() => {
@@ -75,19 +76,39 @@ export function SavedSchemes() {
                 Create a free account to save your palettes and access them from any device.
               </p>
               <div className="flex gap-2 justify-center pt-1">
-                <SignUpButton mode="modal">
-                  <button
-                    className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90"
-                    style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
-                  >
-                    <UserPlus size={12} /> Sign Up Free
-                  </button>
-                </SignUpButton>
-                <SignInButton mode="modal">
-                  <button className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50">
-                    <LogIn size={12} /> Log In
-                  </button>
-                </SignInButton>
+                {isLoaded ? (
+                  <>
+                    <SignUpButton mode="modal">
+                      <button
+                        className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90"
+                        style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
+                      >
+                        <UserPlus size={12} /> Sign Up Free
+                      </button>
+                    </SignUpButton>
+                    <SignInButton mode="modal">
+                      <button className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50">
+                        <LogIn size={12} /> Log In
+                      </button>
+                    </SignInButton>
+                  </>
+                ) : (
+                  <>
+                    <a
+                      href={`${authFallbackBase}/sign-up`}
+                      className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90"
+                      style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
+                    >
+                      <UserPlus size={12} /> Sign Up Free
+                    </a>
+                    <a
+                      href={`${authFallbackBase}/sign-in`}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50"
+                    >
+                      <LogIn size={12} /> Log In
+                    </a>
+                  </>
+                )}
               </div>
             </div>
           ) : (
