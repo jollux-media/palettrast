@@ -75,7 +75,7 @@ export function SavedSchemes() {
                 Create a free account to save your palettes and access them from any device.
               </p>
               <div className="flex gap-2 justify-center pt-1">
-                <SignUpButton mode="modal">
+                <SignUpButton mode="redirect" fallbackRedirectUrl="/" signInFallbackRedirectUrl="/sign-in">
                   <button
                     className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90 disabled:opacity-60"
                     style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
@@ -84,7 +84,7 @@ export function SavedSchemes() {
                     <UserPlus size={12} /> Sign Up Free
                   </button>
                 </SignUpButton>
-                <SignInButton mode="modal">
+                <SignInButton mode="redirect" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/sign-up">
                   <button
                     className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50 disabled:opacity-60"
                     disabled={!isLoaded}

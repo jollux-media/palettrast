@@ -43,7 +43,7 @@ export default function Home() {
             )}
             {hasAuthConfigured && !isSignedIn && (
               <>
-                <SignInButton mode="modal">
+                <SignInButton mode="redirect" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/sign-up">
                   <button
                     className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
                     style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
@@ -52,7 +52,7 @@ export default function Home() {
                     Log In
                   </button>
                 </SignInButton>
-                <SignUpButton mode="modal">
+                <SignUpButton mode="redirect" fallbackRedirectUrl="/" signInFallbackRedirectUrl="/sign-in">
                   <button
                     className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90 disabled:opacity-60"
                     style={{

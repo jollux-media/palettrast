@@ -6,6 +6,8 @@ import { ColourProvider } from "@/lib/colour-context";
 import { AuthContext, type AuthValue } from "@/lib/auth-context";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
 import Home from "@/pages/home";
+import SignInPage from "@/pages/sign-in";
+import SignUpPage from "@/pages/sign-up";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "sonner";
 import { useEffect, useMemo, useState } from "react";
@@ -19,6 +21,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/sign-in" component={SignInPage} />
+      <Route path="/sign-up" component={SignUpPage} />
       <Route component={NotFound} />
     </Switch>
   );
