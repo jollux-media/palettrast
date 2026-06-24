@@ -68,6 +68,28 @@ if (process.env.NODE_ENV === "production") {
     process.env.FRONTEND_DIST ??
     path.join(path.dirname(fileURLToPath(import.meta.url)), "public");
 
+  const faviconFiles = new Set([
+    "favicon.ico",
+    "favicon-32.png",
+    "favicon-512.png",
+    "apple-touch-icon.png",
+  ]);
+
+  app.get(/^\/(?:favicon(?:-\d+)?\.(?:png|ico)|apple-touch-icon\.png)$/, (req, res, next) => {
+    const basename = path.basename(req.path);
+    if (!faviconFiles.has(basename)) {
+      next();
+      return;
+    }
+
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.sendFile(path.join(frontendDist, basename), (err) => {
+      if (err) next(err);
+    });
+  });
+
   app.use(express.static(frontendDist));
 
   // Express 5: bare "*" routes break path-to-regexp — use middleware for SPA fallback
