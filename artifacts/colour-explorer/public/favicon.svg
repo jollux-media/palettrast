@@ -1,3 +1,38 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <clipPath id="icon">
+      <rect width="32" height="32" rx="6"/>
+    </clipPath>
+    <clipPath id="pLeft">
+      <rect x="0" y="0" width="16" height="32"/>
+    </clipPath>
+    <clipPath id="pRight">
+      <rect x="16" y="0" width="16" height="32"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#icon)">
+    <rect width="16" height="32" fill="#6366F1"/>
+    <rect x="16" width="16" height="32" fill="#F97316"/>
+  </g>
+  <!-- P halves use the opposite background colour -->
+  <text
+    x="16"
+    y="23.5"
+    text-anchor="middle"
+    font-family="Inter, system-ui, sans-serif"
+    font-size="22"
+    font-weight="700"
+    fill="#F97316"
+    clip-path="url(#pLeft)"
+  >P</text>
+  <text
+    x="16"
+    y="23.5"
+    text-anchor="middle"
+    font-family="Inter, system-ui, sans-serif"
+    font-size="22"
+    font-weight="700"
+    fill="#6366F1"
+    clip-path="url(#pRight)"
+  >P</text>
 </svg>
