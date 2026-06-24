@@ -73,7 +73,7 @@ export function ColourProvider({ children }: { children: React.ReactNode }) {
   // Sync auth token getter via effect (not during render)
   useEffect(() => {
     if (isSignedIn) {
-      setAuthTokenGetter(() => getToken());
+      setAuthTokenGetter(async () => (await getToken()) ?? null);
     } else {
       setAuthTokenGetter(null);
     }

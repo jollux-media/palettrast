@@ -1,14 +1,15 @@
 import { Router, type IRouter } from "express";
-import { requireAuth, getAuth } from "@clerk/express";
+import { getAuth } from "@clerk/express";
 import { db } from "@workspace/db";
 import { savedSchemesTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
 import type { Request, Response } from "express";
 import { CreateSchemeBody } from "@workspace/api-zod";
+import { requireApiAuth } from "../middlewares/requireApiAuth";
 
 const router: IRouter = Router();
 
-router.use(requireAuth());
+router.use(requireApiAuth);
 
 router.get("/schemes", async (req: Request, res: Response) => {
   const { userId } = getAuth(req);

@@ -69,7 +69,7 @@ function AuthSync({ getToken }: { getToken: AuthValue["getToken"] }) {
 
   useEffect(() => {
     if (isSignedIn) {
-      setAuthTokenGetter(() => getToken());
+      setAuthTokenGetter(async () => (await getToken()) ?? null);
     } else {
       setAuthTokenGetter(null);
     }

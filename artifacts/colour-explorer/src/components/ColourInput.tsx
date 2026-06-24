@@ -3,6 +3,7 @@ import { isValidHex, normalizeHex } from "@/lib/colour-utils";
 import { useColours } from "@/lib/colour-context";
 import { X, Plus, Shuffle, Upload, Trash2, BookmarkPlus, AlertTriangle } from "lucide-react";
 import type { SavedScheme } from "@/lib/colour-context";
+import { toast } from "sonner";
 
 const NEU_BG = "#E8ECF1";
 const NEU_SHADOW = "6px 6px 14px rgba(0,0,0,0.10), -6px -6px 14px rgba(255,255,255,0.85)";
@@ -124,6 +125,9 @@ export function ColourInput() {
       setConflict(null);
       setSaved(true);
       setTimeout(() => { setSaved(false); closeSaveModal(); }, 1000);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not save scheme";
+      toast.error(message);
     } finally {
       setSaving(false);
     }

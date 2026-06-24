@@ -360,7 +360,20 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  const response = await fetch(input, {
+    ...init,
+    method,
+    headers,
+    redirect: requestInfo.url.includes("/api/") ? "manual" : "follow",
+  });
+
+  if (response.status >= 300 && response.status < 400) {
+    throw new ApiError(
+      response,
+      { error: "Unexpected redirect — sign in again and retry." },
+      requestInfo,
+    );
+  }
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);
