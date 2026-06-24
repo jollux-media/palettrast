@@ -18,10 +18,39 @@ function timeAgo(ts: number): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+function SavedSchemesAuthCta() {
+  const clerk = useClerk();
+
+  return (
+    <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-5 text-center space-y-3">
+      <p className="text-sm font-semibold text-indigo-800">Save &amp; sync your colour schemes</p>
+      <p className="text-xs text-indigo-600 leading-relaxed">
+        Create a free account to save your palettes and access them from any device.
+      </p>
+      <div className="flex gap-2 justify-center pt-1">
+        <button
+          type="button"
+          className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90"
+          style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
+          onClick={() => openSignUpModal(clerk)}
+        >
+          <UserPlus size={12} /> Sign Up Free
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50"
+          onClick={() => openSignInModal(clerk)}
+        >
+          <LogIn size={12} /> Log In
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function SavedSchemes() {
   const { savedSchemes, loadScheme, deleteScheme, isSignedIn, openSchemesSignal } = useColours();
   const { hasAuthConfigured } = useAppAuth();
-  const clerk = useClerk();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
@@ -71,29 +100,7 @@ export function SavedSchemes() {
         <div className="px-5 pb-4 border-t border-black/5">
           {/* Not signed in — CTA */}
           {hasAuthConfigured && !isSignedIn ? (
-            <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-5 text-center space-y-3">
-              <p className="text-sm font-semibold text-indigo-800">Save &amp; sync your colour schemes</p>
-              <p className="text-xs text-indigo-600 leading-relaxed">
-                Create a free account to save your palettes and access them from any device.
-              </p>
-              <div className="flex gap-2 justify-center pt-1">
-                <button
-                  type="button"
-                  className="flex items-center gap-1.5 text-xs font-bold text-white rounded-lg px-4 py-2 transition-colors hover:opacity-90"
-                  style={{ background: "linear-gradient(135deg, #6366F1, #818CF8)" }}
-                  onClick={() => openSignUpModal(clerk)}
-                >
-                  <UserPlus size={12} /> Sign Up Free
-                </button>
-                <button
-                  type="button"
-                  className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 border border-indigo-300 bg-white rounded-lg px-4 py-2 transition-colors hover:bg-indigo-50"
-                  onClick={() => openSignInModal(clerk)}
-                >
-                  <LogIn size={12} /> Log In
-                </button>
-              </div>
-            </div>
+            <SavedSchemesAuthCta />
           ) : (
             /* Signed in (or Clerk not configured) — scheme list */
             <>

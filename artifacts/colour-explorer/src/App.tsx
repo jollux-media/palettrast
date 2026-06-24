@@ -122,6 +122,14 @@ const defaultAuth: AuthValue = {
   getToken: async () => null,
 };
 
+function AppLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#E8ECF1]">
+      <p className="text-sm text-slate-600">Loading…</p>
+    </div>
+  );
+}
+
 function App() {
   const [runtimePublishableKey, setRuntimePublishableKey] = useState<string | undefined>(
     IS_PROD ? undefined : BUILD_TIME_PUBLISHABLE_KEY,
@@ -171,7 +179,7 @@ function App() {
   );
 
   if (!isConfigResolved) {
-    return <AppContent authValue={defaultAuth} hasAuthConfigured={false} />;
+    return <AppLoading />;
   }
 
   if (!publishableKey) {

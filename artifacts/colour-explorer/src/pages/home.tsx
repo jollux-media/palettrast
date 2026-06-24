@@ -17,10 +17,51 @@ const NEU_BG = "#E8ECF1";
 const NEU_SHADOW = "6px 6px 14px rgba(0,0,0,0.10), -6px -6px 14px rgba(255,255,255,0.85)";
 const NEU_INSET = "inset 4px 4px 8px rgba(0,0,0,0.10), inset -4px -4px 8px rgba(255,255,255,0.75)";
 
+function HomeAuthActions({
+  isSignedIn,
+  isLoaded,
+}: {
+  isSignedIn: boolean;
+  isLoaded: boolean;
+}) {
+  const clerk = useClerk();
+
+  if (isSignedIn && isLoaded) {
+    return <UserButton afterSignOutUrl={window.location.href} />;
+  }
+
+  if (!isSignedIn) {
+    return (
+      <>
+        <button
+          type="button"
+          className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
+          style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
+          onClick={() => openSignInModal(clerk)}
+        >
+          Log In
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90"
+          style={{
+            background: "linear-gradient(135deg, #6366F1, #818CF8)",
+            boxShadow: "4px 4px 10px rgba(99,102,241,0.35), -2px -2px 6px rgba(255,255,255,0.6)",
+          }}
+          onClick={() => openSignUpModal(clerk)}
+        >
+          Sign Up
+        </button>
+      </>
+    );
+  }
+
+  return null;
+}
+
 export default function Home() {
   const { shuffle, mode, toggleMode } = useColours();
   const { hasAuthConfigured, isSignedIn, isLoaded } = useAppAuth();
-  const clerk = useClerk();
   const [leftTab, setLeftTab] = useState<LeftTab>("palette");
 
   return (
@@ -39,32 +80,8 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Auth buttons — only rendered when ClerkProvider is active */}
-            {hasAuthConfigured && isSignedIn && isLoaded && (
-              <UserButton afterSignOutUrl={window.location.href} />
-            )}
-            {hasAuthConfigured && !isSignedIn && (
-              <>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-sm font-semibold rounded-xl px-4 py-2 transition-all"
-                  style={{ backgroundColor: NEU_BG, color: "#475569", boxShadow: NEU_SHADOW }}
-                  onClick={() => openSignInModal(clerk)}
-                >
-                  Log In
-                </button>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2 transition-all hover:opacity-90"
-                  style={{
-                    background: "linear-gradient(135deg, #6366F1, #818CF8)",
-                    boxShadow: "4px 4px 10px rgba(99,102,241,0.35), -2px -2px 6px rgba(255,255,255,0.6)",
-                  }}
-                  onClick={() => openSignUpModal(clerk)}
-                >
-                  Sign Up
-                </button>
-              </>
+            {hasAuthConfigured && (
+              <HomeAuthActions isSignedIn={isSignedIn} isLoaded={isLoaded} />
             )}
 
             {/* Dark mode toggle */}
