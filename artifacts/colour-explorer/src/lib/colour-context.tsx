@@ -15,6 +15,8 @@ import {
   buildSmartColourMap,
   shuffleSmartColourMap,
   FALLBACK_COLOURS,
+  DEFAULT_ROLES,
+  normalizeHex,
 } from "./colour-utils";
 
 type PerModeMaps = Record<ColourMode, ColourMap>;
@@ -38,6 +40,7 @@ interface ColourContextValue {
   openSchemesSignal: number;
   setColours: (colours: string[]) => void;
   addColour: (hex: string) => void;
+  removeColour: (hex: string) => void;
   shuffle: () => void;
   assignRole: (role: ColourRole, hex: string) => void;
   toggleLock: (role: ColourRole) => void;
@@ -53,6 +56,34 @@ const ColourContext = createContext<ColourContextValue | null>(null);
 function normalizeMap(map: Partial<ColourMap>, mode: ColourMode): ColourMap {
   const fresh = buildSmartColourMap(FALLBACK_COLOURS, mode);
   return { ...fresh, ...map } as ColourMap;
+}
+
+function mapUsesHex(map: ColourMap, hexUpper: string): boolean {
+  return Object.values(map).some((value) => value.toUpperCase() === hexUpper);
+}
+
+function reassignRemovedHex(
+  map: ColourMap,
+  removedHexUpper: string,
+  smart: ColourMap,
+): ColourMap {
+  let changed = false;
+  let sidebarReassigned = false;
+  const next = { ...map };
+
+  for (const role of DEFAULT_ROLES) {
+    if (next[role].toUpperCase() === removedHexUpper) {
+      next[role] = smart[role];
+      changed = true;
+      if (role === "sidebar") sidebarReassigned = true;
+    }
+  }
+
+  if (!changed) return map;
+  if (sidebarReassigned) {
+    next.navText = smart.navText;
+  }
+  return next;
 }
 
 export function ColourProvider({ children }: { children: React.ReactNode }) {
@@ -125,6 +156,37 @@ export function ColourProvider({ children }: { children: React.ReactNode }) {
       return [...prev, newHex];
     });
   }, []);
+
+  const removeColour = useCallback(
+    (hex: string) => {
+      const hexUpper = normalizeHex(hex).toUpperCase();
+      if (colours.length <= 1) return;
+
+      const nextColours = colours.filter((c) => c.toUpperCase() !== hexUpper);
+      if (nextColours.length === colours.length) return;
+
+      setColoursState(nextColours);
+
+      const usedInMaps =
+        mapUsesHex(maps.dark, hexUpper) || mapUsesHex(maps.light, hexUpper);
+      if (!usedInMaps) return;
+
+      const forMap = nextColours.length > 0 ? nextColours : FALLBACK_COLOURS;
+      setMaps((prev) => ({
+        dark: reassignRemovedHex(
+          prev.dark,
+          hexUpper,
+          buildSmartColourMap(forMap, "dark"),
+        ),
+        light: reassignRemovedHex(
+          prev.light,
+          hexUpper,
+          buildSmartColourMap(forMap, "light"),
+        ),
+      }));
+    },
+    [colours, maps],
+  );
 
   const assignRole = useCallback(
     (role: ColourRole, hex: string) => {
@@ -206,6 +268,7 @@ export function ColourProvider({ children }: { children: React.ReactNode }) {
         openSchemesSignal,
         setColours,
         addColour,
+        removeColour,
         shuffle,
         assignRole,
         toggleLock,

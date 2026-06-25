@@ -43,7 +43,7 @@ function ColourChip({ hex, isUsed, onRemove }: { hex: string; isUsed: boolean; o
 
 export function ColourInput() {
   const {
-    colours, colourMap, setColours, shuffle,
+    colours, colourMap, setColours, removeColour, shuffle,
     savedSchemes, saveScheme, deleteScheme,
     isSignedIn, openSchemesPanel,
   } = useColours();
@@ -70,11 +70,6 @@ export function ColourInput() {
     setColours([...colours, hex]);
     setInputValue("");
     setError("");
-  }
-
-  function removeColour(hex: string) {
-    if (colours.length <= 1) return;
-    setColours(colours.filter((c) => c !== hex));
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
